@@ -1,0 +1,19 @@
+#!/bin/busybox sh
+
+mount -t proc none /proc
+mount -t sysfs none /sys
+
+echo "Welcome to Setup!"
+echo "Here are some disks to install on:"
+fdisk -l | more
+echo "Enter a disk to install on:"
+read disk
+echo "THIS WILL WIPE ALL DATA ON $disk! PRESS ENTER TO CONTINUE . . ."
+read tmpvar
+echo "Wiping MBR"
+dd if=/dev/zero of=$disk bs=512 count=1
+mkfs.ext4 $disk
+echo "Copying files"
+mount $disk /target
+cd /install
+
