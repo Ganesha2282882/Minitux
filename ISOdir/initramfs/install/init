@@ -1,0 +1,2 @@
+mount /data /main
+chroot /main "busybox sh"

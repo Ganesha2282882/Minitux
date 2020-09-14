@@ -1,0 +1,32 @@
+#!/bin/busybox sh
+
+mount -t proc none /proc
+mount -t sysfs none /sys
+
+echo "Welcome to Setup!"
+echo "Here are some disks to install on:"
+fdisk -l | more
+echo "Enter a disk to install on:"
+read disk
+echo "THIS WILL WIPE ALL DATA ON $disk! PRESS ENTER TO CONTINUE . . ."
+read tmpvar
+echo "Wiping MBR with GRUB"
+dd if=/spstall/grubnopar.img of=$disk
+printf "n\nw" | fdisk $disk
+mkfs.minix $disk1
+echo "Copying files"
+mkdir /target
+mount $disk1 /target
+cd /install
+cp -r * /target
+echo "How big do you want your data image to be? (add K for KB, M, for MB at the end)"
+read dsize
+dd if=/dev/zero of=/target/data bs=$dsize count=1
+mkfs.minix /target/data
+mount /target/data /dataroot
+cd /instdata
+cp -r * /dataroot
+echo "Install complete. I will chroot to your system in 5 seconds."
+sleep 5
+
+chroot /dataroot
